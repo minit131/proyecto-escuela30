@@ -40,7 +40,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <h2>🎓 Colegio 30 Victor Mercante</h2>
+                <h2>🎓 Colegio San José</h2>
             </div>
             <ul class="nav-menu">
                 <li><a href="#inicio">Inicio</a></li>
@@ -82,8 +82,7 @@
             <!-- Tabs de administración -->
             <div class="admin-tabs">
                 <button class="tab-btn active" onclick="showTab('news-tab', event)">Gestionar Noticias</button>
-<button class="tab-btn" onclick="showTab('users-tab', event)">Gestionar Usuarios</button>
-
+                <button class="tab-btn" onclick="showTab('users-tab', event)">Gestionar Usuarios</button>
             </div>
 
             <!-- Tab de Noticias -->
@@ -108,7 +107,7 @@
                 <div class="news-management">
                     <h4>Noticias Publicadas</h4>
                     <div id="admin-news-list" class="admin-news-list">
-                        <!-- Se llenarán las noticias con opción de eliminar -->
+                        <!-- Noticias dinámicas -->
                     </div>
                 </div>
             </div>
@@ -117,9 +116,7 @@
             <div id="users-tab" class="tab-content hidden">
                 <div class="users-management">
                     <h4>Gestión de Usuarios</h4>
-                    <div id="users-list" class="users-list">
-                        <!-- Se llenará con la lista de usuarios -->
-                    </div>
+                    <div id="users-list" class="users-list"></div>
                 </div>
             </div>
         </div>
@@ -151,7 +148,7 @@
             <div class="container">
                 <h2>📰 Últimas Noticias</h2>
                 <div id="news-container" class="news-grid">
-                    <!-- Noticia de ejemplo -->
+                    <!-- Ejemplos iniciales -->
                     <div class="news-card" data-news-id="1">
                         <div class="news-header">
                             <h3>🎓 Bienvenida al nuevo año escolar</h3>
@@ -159,13 +156,12 @@
                                 <button class="delete-btn" onclick="deleteNews(1)">🗑️</button>
                             </div>
                         </div>
-                        <p>Damos la bienvenida a todos nuestros estudiantes al nuevo período académico 2025. Estamos emocionados por comenzar este nuevo ciclo lleno de aprendizaje y crecimiento.</p>
+                        <p>Damos la bienvenida a todos nuestros estudiantes al nuevo período académico 2025.</p>
                         <div class="news-meta">
                             <span class="date">📅 10 de Agosto, 2025</span>
                             <span class="author">👤 Administrador</span>
                         </div>
                     </div>
-                    
                     <div class="news-card" data-news-id="2">
                         <div class="news-header">
                             <h3>🏃‍♂️ Nuevas instalaciones deportivas</h3>
@@ -173,6 +169,7 @@
                                 <button class="delete-btn" onclick="deleteNews(2)">🗑️</button>
                             </div>
                         </div>
+                        <p>Inauguración de nuevas instalaciones deportivas: cancha de básquet y área de ejercicios.</p>
                         <div class="news-meta">
                             <span class="date">📅 5 de Agosto, 2025</span>
                             <span class="author">👤 Administrador</span>
@@ -189,13 +186,14 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>📍 Contacto</h3>
-                    <p>📧 info@colegio30victor.edu.ar</p>
+                    <p>📧 info@colegiosanjose.edu.ar</p>
                     <p>📞 (011) 4567-8900</p>
-                    <p>🏠 andonaegui 3143, Buenos Aires</p>
+                    <p>🏠 Calle Principal 123, Buenos Aires</p>
                 </div>
                 <div class="footer-section">
                     <h3>⏰ Horarios</h3>
                     <p>📅 Lunes a Viernes: 7:00 - 18:00</p>
+                    <p>📅 Sábados: 8:00 - 12:00</p>
                 </div>
                 <div class="footer-section">
                     <h3>🌐 Síguenos</h3>
@@ -204,18 +202,21 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Colegio 30 Vitor Mercante. Todos los derechos reservados.</p>
+                <p>&copy; 2025 Colegio San José. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Sistema de usuarios y autenticación
-        let users = JSON.parse(localStorage.getItem('school_users') || '{}');
+        let users = {};
+        try {
+            users = JSON.parse(localStorage.getItem('school_users')) || {};
+        } catch (e) {
+            users = {};
+        }
         let currentUser = null;
-        let newsIdCounter = 3; // Empezamos con 3 porque ya hay 2 noticias
+        let newsIdCounter = 3;
 
-        // Inicializar usuario admin por defecto
         if (Object.keys(users).length === 0) {
             users['admin'] = {
                 username: 'admin',
@@ -227,38 +228,38 @@
             localStorage.setItem('school_users', JSON.stringify(users));
         }
 
-        // Funciones de Modal
         function openLoginModal() {
             document.getElementById('login-modal').classList.remove('hidden');
             showLogin();
         }
-
         function closeModal() {
             document.getElementById('login-modal').classList.add('hidden');
         }
-
         function showLogin() {
             document.getElementById('modal-title').textContent = 'Iniciar Sesión';
             document.getElementById('login-form').classList.remove('hidden');
             document.getElementById('register-form').classList.add('hidden');
         }
-
         function showRegister() {
             document.getElementById('modal-title').textContent = 'Crear Cuenta';
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('register-form').classList.remove('hidden');
         }
 
-        // Funciones de autenticación
+        function showTab(tabId, event) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+
         function login() {
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
-
             if (!username || !password) {
                 alert('Por favor, completa todos los campos');
                 return;
             }
-
             if (users[username] && users[username].password === password) {
                 currentUser = users[username];
                 updateUI();
@@ -268,61 +269,45 @@
                 alert('Usuario o contraseña incorrectos');
             }
         }
-
         function register() {
             const username = document.getElementById('register-username').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirm = document.getElementById('register-confirm').value;
-
             if (!username || !email || !password || !confirm) {
                 alert('Por favor, completa todos los campos');
                 return;
             }
-
             if (password !== confirm) {
                 alert('Las contraseñas no coinciden');
                 return;
             }
-
             if (users[username]) {
                 alert('El usuario ya existe');
                 return;
             }
-
-            users[username] = {
-                username: username,
-                email: email,
-                password: password,
-                role: 'user',
-                created: new Date().toISOString()
-            };
-
+            users[username] = { username, email, password, role: 'user', created: new Date().toISOString() };
             localStorage.setItem('school_users', JSON.stringify(users));
             alert('Cuenta creada exitosamente. Ahora puedes iniciar sesión.');
             showLogin();
         }
-
         function logout() {
             currentUser = null;
             updateUI();
             alert('Sesión cerrada exitosamente');
         }
 
-        // Actualizar interfaz según el usuario
         function updateUI() {
             const authButton = document.getElementById('auth-button');
             const userPanel = document.getElementById('user-panel');
             const adminPanelBtn = document.getElementById('admin-panel-btn');
             const newsActions = document.querySelectorAll('.news-actions');
-
             if (currentUser) {
                 authButton.classList.add('hidden');
                 userPanel.classList.remove('hidden');
                 document.getElementById('welcome-user').textContent = `Bienvenido, ${currentUser.username}`;
                 document.getElementById('user-role').textContent = currentUser.role === 'admin' ? 'Administrador' : 'Usuario';
                 document.getElementById('user-role').className = `role-badge ${currentUser.role}`;
-
                 if (currentUser.role === 'admin') {
                     adminPanelBtn.classList.remove('hidden');
                     newsActions.forEach(action => action.classList.remove('hidden'));
@@ -336,198 +321,19 @@
                 document.getElementById('admin-panel').classList.add('hidden');
                 newsActions.forEach(action => action.classList.add('hidden'));
             }
-
-            updateUsersList();
         }
 
-        // Funciones del panel de administración
         function toggleAdminPanel() {
             const panel = document.getElementById('admin-panel');
             panel.classList.toggle('hidden');
-            if (!panel.classList.contains('hidden')) {
-                updateAdminNewsList();
-                updateUsersList();
-            }
         }
 
-        function showTab(tabId, event) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(tabId).classList.remove('hidden');
-    event.target.classList.add('active');
-}
-
-        function addNews() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                alert('No tienes permisos para publicar noticias');
-                return;
-            }
-
-            const title = document.getElementById('news-title').value;
-            const content = document.getElementById('news-content').value;
-            const imageFile = document.getElementById('image-upload').files[0];
-            const audioFile = document.getElementById('audio-upload').files[0];
-
-            if (!title || !content) {
-                alert('Por favor, completa el título y contenido de la noticia');
-                return;
-            }
-
-            const newsContainer = document.getElementById('news-container');
-            const newsCard = document.createElement('div');
-            newsCard.className = 'news-card';
-            newsCard.setAttribute('data-news-id', newsIdCounter);
-
-            let mediaContent = '';
-            
-            if (imageFile) {
-                const imageURL = URL.createObjectURL(imageFile);
-                mediaContent += `<img src="${imageURL}" alt="${title}" class="news-image">`;
-            }
-            
-            if (audioFile) {
-                const audioURL = URL.createObjectURL(audioFile);
-                mediaContent += `<audio controls class="news-audio"><source src="${audioURL}" type="${audioFile.type}">Tu navegador no soporta audio.</audio>`;
-            }
-
-            const currentDate = new Date().toLocaleDateString('es-AR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-
-            newsCard.innerHTML = `
-                <div class="news-header">
-                    <h3>${title}</h3>
-                    <div class="news-actions${currentUser && currentUser.role === 'admin' ? '' : ' hidden'}">
-                        <button class="delete-btn" onclick="deleteNews(${newsIdCounter})">🗑️</button>
-                    </div>
-                </div>
-                ${mediaContent}
-                <p>${content}</p>
-                <div class="news-meta">
-                    <span class="date">📅 ${currentDate}</span>
-                    <span class="author">👤 ${currentUser.username}</span>
-                </div>
-            `;
-
-            newsContainer.insertBefore(newsCard, newsContainer.firstChild);
-            newsIdCounter++;
-
-            // Actualizar contador
-            document.getElementById('news-count').textContent = document.querySelectorAll('.news-card').length;
-
-            // Limpiar formulario
-            document.getElementById('news-title').value = '';
-            document.getElementById('news-content').value = '';
-            document.getElementById('image-upload').value = '';
-            document.getElementById('audio-upload').value = '';
-
-            updateAdminNewsList();
-        }
-
-        function deleteNews(newsId) {
-            if (!currentUser || currentUser.role !== 'admin') {
-                alert('No tienes permisos para eliminar noticias');
-                return;
-            }
-
-            if (confirm('¿Estás seguro de que quieres eliminar esta noticia?')) {
-                const newsCard = document.querySelector(`[data-news-id="${newsId}"]`);
-                if (newsCard) {
-                    newsCard.remove();
-                    document.getElementById('news-count').textContent = document.querySelectorAll('.news-card').length;
-                    updateAdminNewsList();
-                }
-            }
-        }
-
-        function updateAdminNewsList() {
-            const adminNewsList = document.getElementById('admin-news-list');
-            const newsCards = document.querySelectorAll('.news-card');
-            
-            adminNewsList.innerHTML = '';
-            newsCards.forEach(card => {
-                const title = card.querySelector('h3').textContent;
-                const date = card.querySelector('.date').textContent;
-                const newsId = card.getAttribute('data-news-id');
-                
-                const listItem = document.createElement('div');
-                listItem.className = 'admin-news-item';
-                listItem.innerHTML = `
-                    <span class="news-info">
-                        <strong>${title}</strong>
-                        <small>${date}</small>
-                    </span>
-                    <button class="delete-btn" onclick="deleteNews(${newsId})">🗑️ Eliminar</button>
-                `;
-                adminNewsList.appendChild(listItem);
-            });
-        }
-
-        function updateUsersList() {
-            if (!currentUser || currentUser.role !== 'admin') return;
-
-            const usersList = document.getElementById('users-list');
-            usersList.innerHTML = '';
-
-            Object.values(users).forEach(user => {
-                const userItem = document.createElement('div');
-                userItem.className = 'user-item';
-                userItem.innerHTML = `
-                    <div class="user-info-admin">
-                        <strong>${user.username}</strong>
-                        <span>${user.email}</span>
-                        <span class="role-badge ${user.role}">${user.role === 'admin' ? 'Administrador' : 'Usuario'}</span>
-                    </div>
-                    <div class="user-actions-admin">
-                        <select onchange="changeUserRole('${user.username}', this.value)">
-                            <option value="user" ${user.role === 'user' ? 'selected' : ''}>Usuario</option>
-                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Administrador</option>
-                        </select>
-                        ${user.username !== 'admin' ? `<button class="delete-btn" onclick="deleteUser('${user.username}')">🗑️</button>` : ''}
-                    </div>
-                `;
-                usersList.appendChild(userItem);
-            });
-        }
-
-        function changeUserRole(username, newRole) {
-            if (users[username]) {
-                users[username].role = newRole;
-                localStorage.setItem('school_users', JSON.stringify(users));
-                alert(`El rol de ${username} ha sido cambiado a ${newRole === 'admin' ? 'Administrador' : 'Usuario'}`);
-                updateUsersList();
-            }
-        }
-
-        function deleteUser(username) {
-            if (confirm(`¿Estás seguro de que quieres eliminar el usuario ${username}?`)) {
-                delete users[username];
-                localStorage.setItem('school_users', JSON.stringify(users));
-                updateUsersList();
-            }
-        }
-
-        // Menú hamburguesa para móvil
         function toggleMenu() {
             const navMenu = document.querySelector('.nav-menu');
             navMenu.classList.toggle('active');
         }
 
-        // Inicializar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            updateUI();
-            
-            // Cerrar modal al hacer click fuera
-            window.onclick = function(event) {
-                const modal = document.getElementById('login-modal');
-                if (event.target === modal) {
-                    closeModal();
-                }
-            }
-        });
+        document.addEventListener('DOMContentLoaded', updateUI);
     </script>
 </body>
-
 </html>
