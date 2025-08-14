@@ -30,6 +30,11 @@
                 <input type="email" id="register-email" placeholder="Email">
                 <input type="password" id="register-password" placeholder="Contraseña">
                 <input type="password" id="register-confirm" placeholder="Confirmar contraseña">
+                <select id="register-role">
+                    <option value="alumno">Alumno</option>
+                    <option value="docente">Docente</option>
+                    <option value="padre">Padre</option>
+                </select>
                 <button onclick="register()">Registrarse</button>
                 <p>¿Ya tienes cuenta? <a href="#" onclick="showLogin()">Inicia sesión aquí</a></p>
             </div>
@@ -45,8 +50,6 @@
             <ul class="nav-menu">
                 <li><a href="#inicio">Inicio</a></li>
                 <li><a href="#noticias">Noticias</a></li>
-                <li><a href="#eventos">Eventos</a></li>
-                <li><a href="#galeria">Galería</a></li>
                 <li><a href="#contacto">Contacto</a></li>
                 <li id="auth-button"><a href="#" onclick="openLoginModal()">Iniciar Sesión</a></li>
             </ul>
@@ -65,27 +68,19 @@
             <span id="user-role" class="role-badge">Usuario</span>
         </div>
         <div class="user-actions">
-            <button id="admin-panel-btn" class="hidden" onclick="toggleAdminPanel()">Panel Admin</button>
+            <button id="admin-panel-btn" class="hidden" onclick="toggleAdminPanel()">Panel Publicar</button>
             <button onclick="logout()">Cerrar Sesión</button>
         </div>
     </div>
 
     <!-- Contenido principal -->
     <main class="main-content">
-        <!-- Panel de administración -->
+        <!-- Panel de administración / publicación -->
         <div id="admin-panel" class="admin-panel hidden">
             <div class="admin-header">
-                <h3>📝 Panel de Administración</h3>
+                <h3>📝 Publicar Noticias</h3>
                 <button class="close-btn" onclick="toggleAdminPanel()">×</button>
             </div>
-            
-            <!-- Tabs de administración -->
-            <div class="admin-tabs">
-                <button class="tab-btn active" onclick="showTab('news-tab', event)">Gestionar Noticias</button>
-                <button class="tab-btn" onclick="showTab('users-tab', event)">Gestionar Usuarios</button>
-            </div>
-
-            <!-- Tab de Noticias -->
             <div id="news-tab" class="tab-content">
                 <div class="admin-form">
                     <h4>Publicar Nueva Noticia</h4>
@@ -103,29 +98,14 @@
                     </div>
                     <button onclick="addNews()" class="publish-btn">📤 Publicar Noticia</button>
                 </div>
-
-                <div class="news-management">
-                    <h4>Noticias Publicadas</h4>
-                    <div id="admin-news-list" class="admin-news-list">
-                        <!-- Noticias dinámicas -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tab de Usuarios -->
-            <div id="users-tab" class="tab-content hidden">
-                <div class="users-management">
-                    <h4>Gestión de Usuarios</h4>
-                    <div id="users-list" class="users-list"></div>
-                </div>
             </div>
         </div>
 
         <!-- Sección de bienvenida -->
-        <section class="hero-section">
+        <section class="hero-section" id="inicio">
             <div class="hero-content">
                 <h1>🌟 Bienvenidos al Portal del Colegio</h1>
-                <p>Mantente informado sobre todas las novedades y eventos de nuestra institución educativa</p>
+                <p>Mantente informado sobre todas las novedades de nuestra institución educativa</p>
                 <div class="hero-stats">
                     <div class="stat">
                         <span class="stat-number" id="news-count">2</span>
@@ -148,28 +128,13 @@
             <div class="container">
                 <h2>📰 Últimas Noticias</h2>
                 <div id="news-container" class="news-grid">
-                    <!-- Ejemplos iniciales -->
                     <div class="news-card" data-news-id="1">
                         <div class="news-header">
                             <h3>🎓 Bienvenida al nuevo año escolar</h3>
-                            <div class="news-actions hidden">
-                                <button class="delete-btn" onclick="deleteNews(1)">🗑️</button>
-                            </div>
                         </div>
                         <p>Damos la bienvenida a todos nuestros estudiantes al nuevo período académico 2025.</p>
                         <div class="news-meta">
                             <span class="date">📅 10 de Agosto, 2025</span>
-                            <span class="author">👤 Administrador</span>
-                        </div>
-                    </div>
-                    <div class="news-card" data-news-id="2">
-                        <div class="news-header">
-                            <div class="news-actions hidden">
-                                <button class="delete-btn" onclick="deleteNews(2)">🗑️</button>
-                            </div>
-                        </div>
-                        <div class="news-meta">
-                            <span class="date">📅 5 de Agosto, 2025</span>
                             <span class="author">👤 Administrador</span>
                         </div>
                     </div>
@@ -179,14 +144,14 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer" id="contacto">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>📍 Contacto</h3>
                     <p>📧 info@colegiovictor.edu.ar</p>
                     <p>📞 (011) 4567-8900</p>
-                    <p>🏠 andonaegui 2231, Buenos Aires</p>
+                    <p>🏠 Andonaegui 2231, Buenos Aires</p>
                 </div>
                 <div class="footer-section">
                     <h3>⏰ Horarios</h3>
@@ -206,14 +171,8 @@
     </footer>
 
     <script>
-        let users = {};
-        try {
-            users = JSON.parse(localStorage.getItem('school_users')) || {};
-        } catch (e) {
-            users = {};
-        }
+        let users = JSON.parse(localStorage.getItem('school_users') || '{}');
         let currentUser = null;
-        let newsIdCounter = 3;
 
         if (Object.keys(users).length === 0) {
             users['admin'] = {
@@ -244,20 +203,9 @@
             document.getElementById('register-form').classList.remove('hidden');
         }
 
-        function showTab(tabId, event) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.remove('hidden');
-            event.target.classList.add('active');
-        }
-
         function login() {
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
-            if (!username || !password) {
-                alert('Por favor, completa todos los campos');
-                return;
-            }
             if (users[username] && users[username].password === password) {
                 currentUser = users[username];
                 updateUI();
@@ -272,6 +220,8 @@
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirm = document.getElementById('register-confirm').value;
+            const role = document.getElementById('register-role').value;
+
             if (!username || !email || !password || !confirm) {
                 alert('Por favor, completa todos los campos');
                 return;
@@ -284,7 +234,7 @@
                 alert('El usuario ya existe');
                 return;
             }
-            users[username] = { username, email, password, role: 'user', created: new Date().toISOString() };
+            users[username] = { username, email, password, role, created: new Date().toISOString() };
             localStorage.setItem('school_users', JSON.stringify(users));
             alert('Cuenta creada exitosamente. Ahora puedes iniciar sesión.');
             showLogin();
@@ -292,47 +242,41 @@
         function logout() {
             currentUser = null;
             updateUI();
-            alert('Sesión cerrada exitosamente');
         }
 
         function updateUI() {
             const authButton = document.getElementById('auth-button');
             const userPanel = document.getElementById('user-panel');
             const adminPanelBtn = document.getElementById('admin-panel-btn');
-            const newsActions = document.querySelectorAll('.news-actions');
+
             if (currentUser) {
                 authButton.classList.add('hidden');
                 userPanel.classList.remove('hidden');
                 document.getElementById('welcome-user').textContent = `Bienvenido, ${currentUser.username}`;
-                document.getElementById('user-role').textContent = currentUser.role === 'admin' ? 'Administrador' : 'Usuario';
+                document.getElementById('user-role').textContent = currentUser.role;
                 document.getElementById('user-role').className = `role-badge ${currentUser.role}`;
-                if (currentUser.role === 'admin') {
+                
+                if (currentUser.role === 'docente' || currentUser.role === 'admin') {
                     adminPanelBtn.classList.remove('hidden');
-                    newsActions.forEach(action => action.classList.remove('hidden'));
                 } else {
                     adminPanelBtn.classList.add('hidden');
-                    newsActions.forEach(action => action.classList.add('hidden'));
                 }
             } else {
                 authButton.classList.remove('hidden');
                 userPanel.classList.add('hidden');
                 document.getElementById('admin-panel').classList.add('hidden');
-                newsActions.forEach(action => action.classList.add('hidden'));
             }
         }
 
         function toggleAdminPanel() {
-            const panel = document.getElementById('admin-panel');
-            panel.classList.toggle('hidden');
+            document.getElementById('admin-panel').classList.toggle('hidden');
         }
 
         function toggleMenu() {
-            const navMenu = document.querySelector('.nav-menu');
-            navMenu.classList.toggle('active');
+            document.querySelector('.nav-menu').classList.toggle('active');
         }
 
         document.addEventListener('DOMContentLoaded', updateUI);
     </script>
 </body>
 </html>
-
